@@ -23,12 +23,6 @@
 
 
 - [中文文档](https://gzxy0102.github.io/dcat-admin-docs/)
-- [Demo源码（上游）](https://github.com/jqhph/dcat-admin-demo)
-- [扩展](#)
-
-
-![](https://cdn.learnku.com/uploads/images/202101/28/38389/YLmL7PLqH7.png!large)
-
 
 ### 功能特性
 
