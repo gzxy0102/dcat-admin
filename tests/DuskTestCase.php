@@ -50,6 +50,7 @@ abstract class DuskTestCase extends BaseTestCase
      *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\BeforeClass]
     public static function prepare()
     {
         static::startChromeDriver();

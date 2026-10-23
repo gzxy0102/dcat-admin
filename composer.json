@@ -1,6 +1,6 @@
 {
-    "name": "dcat/laravel-admin",
-    "description": "dcat admin",
+    "name": "gzxy/dcat-admin",
+    "description": "Dcat Admin - 基于 Laravel 的后台系统构建工具（dcat/laravel-admin 的维护分支）",
     "type": "library",
     "keywords": [
         "dcat",
@@ -10,25 +10,32 @@
         "form",
         "laravel admin"
     ],
-    "homepage": "https://github.com/jqhph/dcat-admin",
+    "homepage": "https://github.com/gzxy0102/dcat-admin",
     "license": "MIT",
     "authors": [
         {
             "name": "jqh",
             "email": "841324345@qq.com"
+        },
+        {
+            "name": "gzxy",
+            "email": "gaizhixin@vip.qq.com"
         }
     ],
+    "replace": {
+        "dcat/laravel-admin": "self.version"
+    },
     "require": {
         "php": ">=7.1.0",
-        "laravel/framework": "~5.5|~6.0|~7.0|~8.0|~9.0|~10.0|~11.0|~12.0",
-        "spatie/eloquent-sortable": "3.*|4.*",
+        "laravel/framework": "~5.5|~6.0|~7.0|~8.0|~9.0|~10.0|~11.0|~12.0|~13.0",
+        "spatie/eloquent-sortable": "3.*|4.*|5.*",
         "doctrine/dbal": "^2.6|^3.0|^4.0",
         "dcat/easy-excel": "*"
     },
     "require-dev": {
         "laravel/dusk": "~5.9|~6|~7.0|~8.0",
         "phpstan/phpstan": "^0.12.0|~1.0",
-        "phpunit/phpunit": "^7.5|~9|~10|~11",
+        "phpunit/phpunit": "^7.5|~9|~10|~11|~12",
         "fakerphp/faker": "^1.23",
         "mockery/mockery": "^1.6"
     },

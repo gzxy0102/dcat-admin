@@ -5,17 +5,16 @@
 <br>
 
 <p align="center">
-    <a href="https://github.com/jqhph/dcat-admin/actions">
-        <img src="https://github.com/jqhph/dcat-admin/workflows/Laravel%20Dusk/badge.svg" alt="Build Status">
+    <a href="https://github.com/gzxy0102/dcat-admin/actions">
+        <img src="https://github.com/gzxy0102/dcat-admin/workflows/Laravel%20Dusk/badge.svg" alt="Build Status">
     </a>
-    <a href="https://styleci.io/repos/182349597">
-        <img src="https://github.styleci.io/repos/182349597/shield" alt="StyleCI">
-    </a>
-    <a href="https://packagist.org/packages/dcat/laravel-admin" ><img src="https://poser.pugx.org/dcat/laravel-admin/v/stable" /></a> 
-    <a href="https://packagist.org/packages/dcat/laravel-admin"><img src="https://img.shields.io/packagist/dt/dcat/laravel-admin.svg?color=" /></a> 
-    <a><img src="https://img.shields.io/badge/php-7.1+-59a9f8.svg?style=flat" /></a> 
-    <a><img src="https://img.shields.io/badge/laravel-5.5+-59a9f8.svg?style=flat" ></a>
+    <a href="https://packagist.org/packages/gzxy/dcat-admin" ><img src="https://poser.pugx.org/gzxy/dcat-admin/v/stable" /></a>
+    <a href="https://packagist.org/packages/gzxy/dcat-admin"><img src="https://img.shields.io/packagist/dt/gzxy/dcat-admin.svg?color=" /></a>
+    <a><img src="https://img.shields.io/badge/php-7.1+-59a9f8.svg?style=flat" /></a>
+    <a><img src="https://img.shields.io/badge/laravel-5.5~13-59a9f8.svg?style=flat" ></a>
 </p>
+
+> 本仓库是 [jqhph/dcat-admin](https://github.com/jqhph/dcat-admin)（原 `dcat/laravel-admin` 包）的维护分支。上游已停止更新，本分支在其基础上继续维护，并以 `gzxy/dcat-admin` 包名发布，同时通过 `replace` 声明兼容依赖 `dcat/laravel-admin` 的扩展。
 
 <p align=""><code>Dcat Admin</code>是一个基于<a href="https://www.laravel-admin.org/" target="_blank">laravel-admin</a>二次开发而成的后台系统构建工具，只需很少的代码即可快速构建出一个功能完善的高颜值后台系统。内置丰富的后台常用组件，开箱即用，让开发者告别冗杂的HTML代码，对后端开发者非常友好。</p>
 
@@ -62,15 +61,13 @@
 
 ### 环境
  - PHP >= 7.1.0
- - Laravel 5.5.0 ~ 9.*
+ - Laravel 5.5.0 ~ 13.*
  - Fileinfo PHP Extension
 
 ### 安装
 
 首先需要安装`laravel`框架，如已安装可以跳过此步骤。如果您是第一次使用`laravel`，请务必先阅读文档 [安装 《Laravel中文文档》](https://learnku.com/docs/laravel/8.x/installation/9354) ！
 ```bash
-composer create-project --prefer-dist laravel/laravel 项目名称 9.*
-# 或
 composer create-project --prefer-dist laravel/laravel 项目名称
 ```
 
@@ -91,8 +88,10 @@ DB_PASSWORD=
 ```
 cd {项目名称}
 
-composer require dcat/laravel-admin
+composer require gzxy/dcat-admin
 ```
+
+> **从 `dcat/laravel-admin` 迁移**：先 `composer remove dcat/laravel-admin`，再 `composer require gzxy/dcat-admin` 即可。包内命名空间（`Dcat\Admin`）与配置完全不变，且本包通过 `replace` 声明兼容依赖 `dcat/laravel-admin` 的扩展，无需修改业务代码。
 
 然后运行下面的命令来发布资源：
 
@@ -161,7 +160,7 @@ location / {
 #### Code Contributors
 
 This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
-<a href="https://github.com/jqhph/dcat-admin/graphs/contributors"><img src="https://opencollective.com/dcat-admin/contributors.svg?width=890&button=false" /></a>
+<a href="https://github.com/gzxy0102/dcat-admin/graphs/contributors"><img src="https://opencollective.com/dcat-admin/contributors.svg?width=890&button=false" /></a>
 
 ### Financial Contributors
 
