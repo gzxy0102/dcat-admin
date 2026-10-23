@@ -22,7 +22,7 @@
 <p align=""><code>Dcat Admin</code>是一个基于<a href="https://www.laravel-admin.org/" target="_blank">laravel-admin</a>二次开发而成的后台系统构建工具，只需很少的代码即可快速构建出一个功能完善的高颜值后台系统。内置丰富的后台常用组件，开箱即用，让开发者告别冗杂的HTML代码，对后端开发者非常友好。</p>
 
 
-- [中文文档](https://learnku.com/docs/dcat-admin)
+- [中文文档](https://gzxy0102.github.io/dcat-admin-docs/)
 - [Demo源码（上游）](https://github.com/jqhph/dcat-admin-demo)
 - [扩展](#)
 
