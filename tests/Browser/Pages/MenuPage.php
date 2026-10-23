@@ -68,8 +68,10 @@ class MenuPage extends Page
         return $browser->within(new MenuCreationForm(), function (Browser $browser) use ($input) {
             $browser->fill($input);
 
+            // 提示 toast 在页面跳转前闪现，需在跳转前断言
             $browser->pressAndWaitFor(__('admin.submit'), 2);
-            $browser->waitForLocation($this->url(), 2);
+            $browser->waitForText(__('admin.save_succeeded'), 10);
+            $browser->waitForLocation($this->url(), 5);
         });
     }
 

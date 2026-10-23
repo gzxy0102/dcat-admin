@@ -39,8 +39,7 @@ class MenuTest extends TestCase
 
             $browser
                 ->visit(new MenuPage())
-                ->newMenu($item)
-                ->waitForText(__('admin.save_succeeded'), 10);
+                ->newMenu($item);
 
             $newMenuId = Menu::query()->orderByDesc('id')->first()->id;
 
