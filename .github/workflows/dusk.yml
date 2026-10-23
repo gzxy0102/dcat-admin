@@ -65,3 +65,13 @@ jobs:
 
       - name: Run test suite
         run: cd ./laravel-tests && php artisan dusk
+
+      - name: Upload Dusk artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dusk-artifacts-laravel-${{ matrix.laravel }}
+          path: |
+            ./laravel-tests/tests/Browser/screenshots
+            ./laravel-tests/tests/Browser/console
+          if-no-files-found: ignore
