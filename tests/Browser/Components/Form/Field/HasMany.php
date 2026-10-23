@@ -36,7 +36,8 @@ class HasMany extends Component
     {
         $browser->assertVisible('@container')
             ->assertVisible('@add')
-            ->assertVisible('@forms');
+            // 表单组容器在创建页是零高度空容器，新版 Chrome WebDriver 判定为不可见，只断言存在
+            ->assertPresent('@forms');
     }
 
     /**
