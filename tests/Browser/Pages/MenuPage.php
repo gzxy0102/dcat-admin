@@ -68,9 +68,9 @@ class MenuPage extends Page
         return $browser->within(new MenuCreationForm(), function (Browser $browser) use ($input) {
             $browser->fill($input);
 
-            // 提示 toast 在页面跳转前闪现，需在跳转前断言
+            // 提交成功后页面立即刷新，toast 一闪而过无法稳定断言；以列表中出现新菜单标题作为保存成功依据
             $browser->pressAndWaitFor(__('admin.submit'), 2);
-            $browser->waitForText(__('admin.save_succeeded'), 10);
+            $browser->waitForText($input['title'], 10);
             $browser->waitForLocation($this->url(), 5);
         });
     }
