@@ -1,0 +1,60 @@
+name: Feature Tests
+
+on:
+  push:
+    branches: [ 2.0 ]
+  pull_request:
+    branches: [ 2.0 ]
+  workflow_dispatch:
+
+jobs:
+  feature:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { laravel: '5.*',  php: '7.2' }
+          - { laravel: '6.*',  php: '7.3' }
+          - { laravel: '7.*',  php: '7.3' }
+          - { laravel: '8.*',  php: '8.0' }
+          - { laravel: '9.*',  php: '8.0' }
+          - { laravel: '10.*', php: '8.1' }
+          - { laravel: '11.*', php: '8.2' }
+          - { laravel: '12.*', php: '8.3' }
+          - { laravel: '13.*', php: '8.3' }
+
+    name: Laravel ${{ matrix.laravel }} / PHP ${{ matrix.php }}
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: 123456
+          MYSQL_DATABASE: laravel
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p123456"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          composer create-project --prefer-dist laravel/laravel laravel-tests "${{ matrix.laravel }}"
+          sh ./tests/bin/install-dep.sh
+
+      - name: Install Admin
+        run: sh ./tests/bin/install-admin.sh
+
+      - name: Run test suite
+        run: cd ./laravel-tests && vendor/bin/phpunit -c phpunit.dusk.xml --testsuite Feature
