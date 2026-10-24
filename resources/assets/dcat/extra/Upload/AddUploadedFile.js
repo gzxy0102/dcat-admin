@@ -87,7 +87,7 @@ export default class AddUploadedFile {
             }
 
             // 发起删除请求
-            parent.request.delete({serverId: fileId}, function () {
+            parent.request.delete(file, function () {
                 // 移除
                 html.remove();
 

@@ -337,6 +337,7 @@ import AddUploadedFile from './Upload/AddUploadedFile'
             obj.file.serverName = reason.data.name;
             obj.file.serverPath = reason.data.path;
             obj.file.serverUrl = reason.data.url || null;
+            obj.file.signature = reason.data.signature;
 
             _this.addUploadedFile.add(obj.file);
 
@@ -378,6 +379,7 @@ import AddUploadedFile from './Upload/AddUploadedFile'
                     serverPath: path,
                     ext: ext,
                     fake: 1,
+                    signature: options.preview[i].signature,
                 };
 
                 _this.status.switch('incrOriginalFileNum');

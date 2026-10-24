@@ -3,11 +3,14 @@
 namespace Dcat\Admin\Http\Actions\Extensions;
 
 use Dcat\Admin\Grid\Tools\AbstractTool;
+use Dcat\Admin\Http\Actions\Extensions\Concerns\HasExtensionAuthorization;
 use Dcat\Admin\Http\Forms\InstallFromLocal as InstallFromLocalForm;
 use Dcat\Admin\Widgets\Modal;
 
 class InstallFromLocal extends AbstractTool
 {
+    use HasExtensionAuthorization;
+
     protected $style = 'btn btn-primary';
 
     public function html()

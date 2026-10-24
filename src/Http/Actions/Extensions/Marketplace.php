@@ -3,9 +3,12 @@
 namespace Dcat\Admin\Http\Actions\Extensions;
 
 use Dcat\Admin\Grid\Tools\AbstractTool;
+use Dcat\Admin\Http\Actions\Extensions\Concerns\HasExtensionAuthorization;
 
 class Marketplace extends AbstractTool
 {
+    use HasExtensionAuthorization;
+
     protected $style = 'btn btn-primary';
 
     public function title()

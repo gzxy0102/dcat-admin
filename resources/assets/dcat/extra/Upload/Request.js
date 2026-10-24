@@ -23,6 +23,7 @@ export default class Request {
 
             post._column = parent.getColumn();
             post._relation = parent.relation;
+            post._signature = file.signature;
 
             Dcat.loading();
 

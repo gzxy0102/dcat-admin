@@ -7,6 +7,7 @@ use Dcat\Admin\Contracts\UploadField as UploadFieldInterface;
 use Dcat\Admin\Form\Builder;
 use Dcat\Admin\Form\Field;
 use Dcat\Admin\Form\NestedForm;
+use Dcat\Admin\Support\FileDeleteSignature;
 use Dcat\Admin\Support\WebUploader;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -108,6 +109,15 @@ trait HasFiles
         }
 
         if ($field && $field instanceof UploadFieldInterface) {
+            // 创建页删除请求必须携带服务端生成的删除签名，
+            // 签名绑定当前表单类、字段（含关联字段）与文件路径，防止篡改 key 删除任意文件.
+            if (! FileDeleteSignature::validate($input[FileDeleteSignature::INPUT_NAME] ?? null, get_class($this), $field->column(), $relation, (string) $filePath)) {
+                return $this
+                    ->response()
+                    ->error(trans('admin.deny'))
+                    ->send();
+            }
+
             $this->deleteFile($field, $filePath);
 
             return $this

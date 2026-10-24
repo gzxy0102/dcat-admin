@@ -3,6 +3,7 @@
 namespace Dcat\Admin\Form\Field;
 
 use Dcat\Admin\Exception\UploadException;
+use Dcat\Admin\Support\FileDeleteSignature;
 use Dcat\Admin\Traits\HasUploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
@@ -212,12 +213,33 @@ trait UploadField
             $path = $this->getUploadPath();
             $url = $this->objectUrl($path);
 
-            // 上传成功
-            return $this->responseUploaded($this->saveFullUrl ? $url : $path, $url);
+            $id = $this->saveFullUrl ? $url : $path;
+
+            $response = $this->responseUploaded($id, $url);
+
+            // 返回删除签名，用于前端删除文件时校验
+            $response->data(['signature' => $this->makeDeleteSignature($id)]);
+
+            return $response;
         }
 
         // 上传失败
         throw new UploadException(trans('admin.uploader.upload_failed'));
+    }
+
+    /**
+     * 生成文件删除签名，签名绑定表单类、字段（含关联字段）与文件路径.
+     *
+     * @param  string  $path
+     * @return string
+     *
+     * @see \Dcat\Admin\Support\FileDeleteSignature
+     */
+    protected function makeDeleteSignature(string $path): string
+    {
+        $form = $this->form ? get_class($this->form) : '';
+
+        return FileDeleteSignature::make($form, $this->column(), $this->options['formData']['_relation'] ?? '', $path);
     }
 
     public function remove()

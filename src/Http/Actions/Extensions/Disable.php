@@ -4,9 +4,12 @@ namespace Dcat\Admin\Http\Actions\Extensions;
 
 use Dcat\Admin\Admin;
 use Dcat\Admin\Grid\RowAction;
+use Dcat\Admin\Http\Actions\Extensions\Concerns\HasExtensionAuthorization;
 
 class Disable extends RowAction
 {
+    use HasExtensionAuthorization;
+
     public function title()
     {
         return sprintf('<span class="text-80">%s</span>', trans('admin.disable'));

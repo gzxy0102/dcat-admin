@@ -136,9 +136,10 @@ class File extends Field implements UploadFieldInterface
 
         foreach (Helper::array($this->value()) as $value) {
             $previews[] = [
-                'id'   => $value,
-                'path' => Helper::basename($value),
-                'url'  => $this->objectUrl($value),
+                'id'        => $value,
+                'path'      => Helper::basename($value),
+                'url'       => $this->objectUrl($value),
+                'signature' => $this->makeDeleteSignature($value),
             ];
         }
 
