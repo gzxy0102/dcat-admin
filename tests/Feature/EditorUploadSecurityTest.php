@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Dcat\Admin\Http\Controllers\EditorMDController;
 use Dcat\Admin\Http\Controllers\TinymceController;
 use Dcat\Admin\Support\EditorUploadSignature;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Illuminate\Http\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
@@ -53,26 +53,9 @@ class EditorUploadSecurityTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->removeDirectory($this->tmpDir);
+        app('files')->deleteDirectory($this->tmpDir);
 
         parent::tearDown();
-    }
-
-    protected function removeDirectory(string $dir)
-    {
-        if (! is_dir($dir)) {
-            return;
-        }
-
-        foreach (glob($dir.'/{,.}*', GLOB_MARK | GLOB_BRACE) ?: [] as $file) {
-            if (is_dir($file)) {
-                $this->removeDirectory(rtrim($file, '/'));
-            } else {
-                unlink($file);
-            }
-        }
-
-        rmdir($dir);
     }
 
     /**
@@ -98,13 +81,13 @@ class EditorUploadSecurityTest extends TestCase
      */
     protected function makeRequest(string $input, array $params, UploadedFile $file = null)
     {
-        return \Illuminate\Http\Request::create(
-            '/dcat-api/editor/upload',
-            'POST',
-            $params,
-            [],
-            $file ? [$input => $file] : []
-        );
+        $request = \Illuminate\Http\Request::create('/dcat-api/editor/upload', 'POST', $params);
+
+        if ($file) {
+            $request->files->set($input, $file);
+        }
+
+        return $request;
     }
 
     /**

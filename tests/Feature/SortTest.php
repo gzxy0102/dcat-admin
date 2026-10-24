@@ -26,7 +26,10 @@ class SortTest extends TestCase
     {
         $request = Request::create('/admin/tests/users', 'GET', ['_sort' => $sort]);
 
-        return new Grid\Model($request, new EloquentRepository(new User()));
+        $model = new Grid\Model($request, new EloquentRepository(new User()));
+        $model->setGrid(new Grid(null, null, $request));
+
+        return $model;
     }
 
     /**

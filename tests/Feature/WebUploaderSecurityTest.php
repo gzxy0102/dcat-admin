@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Dcat\Admin\Http\Middleware\WebUploader as WebUploaderMiddleware;
 use Dcat\Admin\Support\WebUploader;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Illuminate\Http\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
@@ -76,13 +76,13 @@ class WebUploaderSecurityTest extends TestCase
      */
     protected function makeRequest(array $params, UploadedFile $file = null)
     {
-        return Request::create(
-            admin_base_path('auth/login'),
-            'POST',
-            $params,
-            [],
-            $file ? [WebUploader::FILE_NAME => $file] : []
-        );
+        $request = Request::create(admin_base_path('auth/login'), 'POST', $params);
+
+        if ($file) {
+            $request->files->set(WebUploader::FILE_NAME, $file);
+        }
+
+        return $request;
     }
 
     /**
@@ -109,7 +109,7 @@ class WebUploaderSecurityTest extends TestCase
      */
     protected function makeUploader(array $params, UploadedFile $file = null): WebUploader
     {
-        if (isset($params['_id'])) {
+        if (isset($params['_id']) && is_string($params['_id']) && preg_match('/^[A-Za-z0-9_-]{1,64}$/', $params['_id'])) {
             $this->tmpIds[] = $params['_id'];
         }
 
@@ -234,7 +234,7 @@ class WebUploaderSecurityTest extends TestCase
         $second = $this->makeUploader($params + ['chunk' => '1'], $this->makeUploadedFile('world'));
         $merged = $second->getUploadedFile();
 
-        $this->assertInstanceOf(UploadedFile::class, $merged);
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\File\UploadedFile::class, $merged);
         $this->assertSame('helloworld', file_get_contents($merged->getRealPath()));
         $this->assertSame(
             0,

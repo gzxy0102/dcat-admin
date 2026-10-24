@@ -75,7 +75,7 @@ class ScaffoldSecurityTest extends TestCase
 
         $error = $this->app['session.store']->get('error');
         $this->assertInstanceOf(MessageBag::class, $error);
-        $this->assertStringContainsString('Invalid controller class name', $error->first());
+        $this->assertStringContainsString('Invalid controller class name', $error->first('message'));
 
         // 不能在任何预期目录之外生成文件
         $this->assertFalse(file_exists(base_path('app/Admin/EvilController.php')));
