@@ -19,7 +19,7 @@ trait ValidatesEditorImageUpload
     /**
      * 服务端 MIME 与存储扩展名映射（小写 MIME => 扩展名）.
      */
-    const IMAGE_EXTENSIONS = [
+    protected static $imageExtensions = [
         'image/jpeg'     => 'jpg',
         'image/pjpeg'    => 'jpg',
         'image/png'      => 'png',
@@ -130,7 +130,7 @@ trait ValidatesEditorImageUpload
 
         $mime = strtolower($info['mime']);
 
-        return static::IMAGE_EXTENSIONS[$mime] ?? null;
+        return static::$imageExtensions[$mime] ?? null;
     }
 
     /**
