@@ -10,6 +10,26 @@ use Illuminate\Support\Arr;
 class MigrationCreator extends BaseMigrationCreator
 {
     /**
+     * 允许的字段类型(与页面脚手架可选类型一致).
+     *
+     * @var array
+     */
+    protected static $allowedColumnTypes = [
+        'string', 'integer', 'text', 'float', 'double', 'decimal', 'boolean', 'date', 'time',
+        'dateTime', 'timestamp', 'char', 'mediumText', 'longText', 'tinyInteger', 'smallInteger',
+        'mediumInteger', 'bigInteger', 'unsignedTinyInteger', 'unsignedSmallInteger', 'unsignedMediumInteger',
+        'unsignedInteger', 'unsignedBigInteger', 'enum', 'json', 'jsonb', 'dateTimeTz', 'timeTz',
+        'timestampTz', 'nullableTimestamps', 'binary', 'ipAddress', 'macAddress',
+    ];
+
+    /**
+     * 允许的字段索引类型.
+     *
+     * @var array
+     */
+    protected static $allowedKeyTypes = ['index', 'unique', 'primary'];
+
+    /**
      * @var string
      */
     protected $bluePrint = '';
@@ -43,7 +63,7 @@ class MigrationCreator extends BaseMigrationCreator
         $stub = $this->files->get(__DIR__.'/stubs/create.stub');
 
         $this->files->put($path, $this->populateAdminStub($name, $stub, $table));
-        $this->files->chmod($path, 0777);
+        $this->files->chmod($path, 0664);
 
         $this->firePostCreateHooks($table, $path);
 
@@ -62,7 +82,7 @@ class MigrationCreator extends BaseMigrationCreator
     {
         return str_replace(
             ['DummyClass', 'DummyTable', 'DummyStructure'],
-            [$this->getClassName($name), $table, $this->bluePrint],
+            [$this->getClassName($name), var_export((string) $table, true), $this->bluePrint],
             $stub
         );
     }
@@ -88,30 +108,54 @@ class MigrationCreator extends BaseMigrationCreator
             throw new AdminException('Table fields can\'t be empty');
         }
 
+        $keyName = (string) $keyName;
+
+        if (! $this->isValidIdentifier($keyName)) {
+            throw new AdminException("Invalid primary key [$keyName]");
+        }
+
         $rows[] = "\$table->bigIncrements('$keyName');\n";
 
         foreach ($fields as $field) {
-            $column = "\$table->{$field['type']}('{$field['name']}')";
+            $name = (string) $field['name'];
 
-            if ($field['key']) {
-                $column .= "->{$field['key']}()";
+            if (! $this->isValidIdentifier($name)) {
+                throw new AdminException("Invalid field name [$name]");
+            }
+
+            $type = (string) Arr::get($field, 'type');
+
+            if (! in_array($type, static::$allowedColumnTypes, true)) {
+                throw new AdminException("Invalid field type [$type]");
+            }
+
+            $column = "\$table->{$type}('{$name}')";
+
+            $key = (string) Arr::get($field, 'key');
+
+            if ($key) {
+                if (! in_array($key, static::$allowedKeyTypes, true)) {
+                    throw new AdminException("Invalid field key [$key]");
+                }
+
+                $column .= "->{$key}()";
             }
 
             $hasDefault = isset($field['default'])
                 && ! is_null($field['default'])
                 && $field['default'] !== '';
             if ($hasDefault) {
-                $column .= "->default('{$field['default']}')";
+                $column .= '->default('.var_export((string) $field['default'], true).')';
             }
 
             if (Arr::get($field, 'nullable') == 'on') {
                 $column .= '->nullable()';
-            } elseif (! $hasDefault && $field['type'] === 'string') {
+            } elseif (! $hasDefault && $type === 'string') {
                 $column .= "->default('')";
             }
 
             if (isset($field['comment']) && $field['comment']) {
-                $column .= "->comment('{$field['comment']}')";
+                $column .= '->comment('.var_export((string) $field['comment'], true).')';
             }
 
             $rows[] = $column.";\n";
@@ -128,5 +172,16 @@ class MigrationCreator extends BaseMigrationCreator
         $this->bluePrint = trim(implode(str_repeat(' ', 12), $rows), "\n");
 
         return $this;
+    }
+
+    /**
+     * 校验表字段名/主键等标识符,防止注入 PHP 代码.
+     *
+     * @param  string  $name
+     * @return bool
+     */
+    protected function isValidIdentifier($name)
+    {
+        return (bool) preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $name);
     }
 }

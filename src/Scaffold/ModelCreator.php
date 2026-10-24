@@ -80,7 +80,7 @@ class ModelCreator
             ->replaceSpace($stub);
 
         $this->files->put($path, $stub);
-        $this->files->chmod($path, 0777);
+        $this->files->chmod($path, 0664);
 
         return $path;
     }
@@ -192,7 +192,7 @@ class ModelCreator
      */
     protected function replacePrimaryKey(&$stub, $keyName)
     {
-        $modelKey = $keyName == 'id' ? '' : "protected \$primaryKey = '$keyName';\n";
+        $modelKey = $keyName == 'id' ? '' : 'protected $primaryKey = '.var_export($keyName, true).";\n";
 
         $stub = str_replace('DummyModelKey', $modelKey, $stub);
 

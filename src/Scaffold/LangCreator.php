@@ -50,7 +50,7 @@ class LangCreator
 
         $files = app('files');
         if ($files->put($filename, Helper::exportArrayPhp($content))) {
-            $files->chmod($filename, 0777);
+            $files->chmod($filename, 0664);
 
             return $filename;
         }

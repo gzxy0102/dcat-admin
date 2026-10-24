@@ -360,7 +360,7 @@ class Helper
 
         foreach ($array as $k => &$v) {
             if (is_array($v)) {
-                $pre = is_string($k) ? "'$k' => " : "$k => ";
+                $pre = is_string($k) ? var_export($k, true).' => ' : "$k => ";
 
                 $txt .= str_repeat(' ', $level * 4).$pre.static::exportArray($v, $level + 1).",\n";
 
@@ -375,11 +375,10 @@ class Helper
             } elseif ($v === null) {
                 $t = 'null';
             } elseif (is_string($v)) {
-                $v = str_replace("'", "\\'", $v);
-                $t = "'$v'";
+                $t = var_export($v, true);
             }
 
-            $pre = is_string($k) ? "'$k' => " : "$k => ";
+            $pre = is_string($k) ? var_export($k, true).' => ' : "$k => ";
 
             $txt .= str_repeat(' ', $level * 4)."{$pre}{$t},\n";
         }
@@ -679,6 +678,32 @@ class Helper
     }
 
     /**
+     * 判断是否为合法的 PHP 类名(支持命名空间).
+     *
+     * @param  string  $class
+     * @return bool
+     */
+    public static function isValidClassName($class)
+    {
+        if (! is_string($class) || $class === '') {
+            return false;
+        }
+
+        $class = trim($class, '\\');
+
+        if ($class === '') {
+            return false;
+        }
+
+        // 每个命名空间分段必须是合法 PHP 标识符,
+        // 否则可能被用于目录逃逸或生成非法 PHP 代码.
+        return (bool) preg_match(
+            '/^[A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*(\\\\[A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*)*$/',
+            $class
+        );
+    }
+
+    /**
      * 获取类名或对象的文件路径.
      *
      * @param  string|object  $class
@@ -692,14 +717,18 @@ class Helper
             $class = get_class($class);
         }
 
+        $class = trim($class, '\\');
+
+        if (! static::isValidClassName($class)) {
+            throw new \InvalidArgumentException("Invalid class name [$class]");
+        }
+
         try {
             if (class_exists($class)) {
                 return (new \ReflectionClass($class))->getFileName();
             }
         } catch (\Throwable $e) {
         }
-
-        $class = trim($class, '\\');
 
         $composer = Composer::parse(base_path('composer.json'));
 

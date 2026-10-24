@@ -13,7 +13,7 @@ class DummyClass extends Migration
      */
     public function up()
     {
-        Schema::create('DummyTable', function (Blueprint $table) {
+        Schema::create(DummyTable, function (Blueprint $table) {
             DummyStructure
         });
     }
@@ -25,6 +25,6 @@ class DummyClass extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('DummyTable');
+        Schema::dropIfExists(DummyTable);
     }
 }

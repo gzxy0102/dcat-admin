@@ -16,7 +16,12 @@
 
         <div class="dropdown-divider"></div>
 
-        <a class="dropdown-item" href="{{ admin_url('auth/logout') }}">
+        <form id="dcat-admin-logout-form" action="{{ admin_url('auth/logout') }}" method="POST" style="display:none;">
+            {{ csrf_field() }}
+        </form>
+
+        <a class="dropdown-item dcat-admin-logout" href="{{ admin_url('auth/logout') }}"
+           onclick="event.preventDefault();document.getElementById('dcat-admin-logout-form').submit();">
             <i class="feather icon-power"></i> {{ trans('admin.logout') }}
         </a>
     </div>

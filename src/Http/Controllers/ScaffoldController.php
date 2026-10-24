@@ -112,12 +112,14 @@ class ScaffoldController extends Controller
         $message = '';
 
         $creates = (array) $request->get('create');
-        $table = Helper::slug($request->get('table_name'), '_');
+        $table = preg_replace('/[^A-Za-z0-9_]/', '', Helper::slug($request->get('table_name'), '_'));
         $controller = $request->get('controller_name');
         $model = $request->get('model_name');
         $repository = $request->get('repository_name');
 
         try {
+            $this->validateClassNames($controller, $model, $repository);
+
             // 1. Create model.
             if (in_array('model', $creates)) {
                 $modelCreator = new ModelCreator($table, $model);
@@ -183,11 +185,29 @@ class ScaffoldController extends Controller
     }
 
     /**
+     * 校验控制器/模型/仓库类名,防止生成非法 PHP 代码或目录逃逸.
+     *
+     * @param  string  $controller
+     * @param  string  $model
+     * @param  string  $repository
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function validateClassNames($controller, $model, $repository)
+    {
+        foreach (compact('controller', 'model', 'repository') as $type => $name) {
+            if ($name && ! Helper::isValidClassName($name)) {
+                throw new \InvalidArgumentException("Invalid $type class name [$name].");
+            }
+        }
+    }
+
+    /**
      * @return array
      */
     public function table()
     {
-        $db = addslashes(\request('db'));
+        $db = \request('db');
         $table = \request('tb');
         if (! $table || ! $db) {
             return ['status' => 1, 'list' => []];
@@ -224,17 +244,19 @@ class ScaffoldController extends Controller
                     continue;
                 }
 
-                $sql = sprintf('SELECT * FROM information_schema.columns WHERE table_schema = "%s"', $value['database']);
+                $sql = 'SELECT * FROM information_schema.columns WHERE table_schema = ?';
+
+                $bindings = [$value['database']];
 
                 if ($tb) {
-                    $p = Arr::get($value, 'prefix');
+                    $bindings[] = Arr::get($value, 'prefix').$tb;
 
-                    $sql .= " AND TABLE_NAME = '{$p}{$tb}'";
+                    $sql .= ' AND TABLE_NAME = ?';
                 }
 
                 $sql .= ' ORDER BY `ORDINAL_POSITION` ASC';
 
-                $tmp = DB::connection($connectName)->select($sql);
+                $tmp = DB::connection($connectName)->select($sql, $bindings);
 
                 $collection = collect($tmp)->map(function ($v) use ($value) {
                     if (! $p = Arr::get($value, 'prefix')) {

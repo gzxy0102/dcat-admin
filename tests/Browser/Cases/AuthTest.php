@@ -82,7 +82,11 @@ class AuthTest extends TestCase
     public function testLogout()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit(admin_base_path('auth/logout'))
+            $browser->visit(admin_base_path('/'))
+                ->click('.dropdown-user .dropdown-toggle')
+                ->whenAvailable('.dcat-admin-logout', function (Browser $browser) {
+                    $browser->click('.dcat-admin-logout');
+                })
                 ->assertPathIs(admin_base_path('auth/login'))
                 ->assertGuest('admin');
         });
