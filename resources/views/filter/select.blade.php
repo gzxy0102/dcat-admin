@@ -22,7 +22,7 @@
     $.ajax({!! admin_javascript_json($remote['ajaxOptions']) !!}).done(function(data) {
         $("{{ $selector }}").select2($.extend({!! admin_javascript_json($configs) !!}, {
             data: data,
-        })).val({!! json_encode($remote['values']) !!}).trigger("change");
+        })).val({!! admin_javascript_json($remote['values']) !!}).trigger("change");
     });
     @else
     $("{!! $selector !!}").select2(configs);

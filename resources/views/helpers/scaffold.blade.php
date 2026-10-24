@@ -309,7 +309,7 @@
             namespaceBase = '{{ str_replace( '\\', '\\\\', $namespaceBase ) }}',
             repositoryNamespace = namespaceBase + '\\Repositories\\',
             controllerNamespace = namespaceBase + '\\Controllers\\',
-            dataTypeMap = {!! json_encode($dataTypeMap) !!},
+            dataTypeMap = {!! admin_javascript_json($dataTypeMap) !!},
             helpers = Dcat.helpers;
 
         var withSingularName = helpers.debounce(function (table) {

@@ -35,7 +35,7 @@
         multiple: true,
         max: {{ $max }},
         @endif
-        values: {!! json_encode($options) !!},
+        values: {!! admin_javascript_json($options) !!},
     });
 
     @if(! empty($loads))

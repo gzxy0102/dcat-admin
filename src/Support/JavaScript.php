@@ -7,6 +7,11 @@ use Illuminate\Support\Str;
 
 class JavaScript
 {
+    /**
+     * json_encode 标志，防止内容破坏 script 上下文或注入 HTML.
+     */
+    const JSON_ENCODE_FLAGS = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+
     protected static $scripts = [];
 
     /**
@@ -74,7 +79,7 @@ class JavaScript
     public static function format($value)
     {
         if (is_array($value) || is_object($value)) {
-            $value = json_encode(Helper::array($value, false));
+            $value = json_encode(Helper::array($value, false), static::JSON_ENCODE_FLAGS);
         }
 
         foreach (static::all() as $id => $script) {

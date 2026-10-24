@@ -101,11 +101,17 @@
 </script>
 
 <script require="@jstree">
-    var nodes = {!! json_encode($nodes) !!};
+    var nodes = {!! admin_javascript_json($nodes) !!};
     var options = {!! admin_javascript_json($options) !!};
-    var area = {!! json_encode($area) !!};
+    var area = {!! admin_javascript_json($area) !!};
+
+    options.core = options.core || {};
+    if (options.core.force_text === undefined) {
+        // 节点 text 按纯文本渲染，防止 XSS
+        options.core.force_text = true;
+    }
 
     $('.grid-dialog-tree').off('click').on('click', function () {
-        resolveDialogTree.call(this, {config: options, nodes: nodes, area: area, rootParentId: '{!! $rootParentId !!}', columns: {!! json_encode($columnNames) !!}});
+        resolveDialogTree.call(this, {config: options, nodes: nodes, area: area, rootParentId: '{!! $rootParentId !!}', columns: {!! admin_javascript_json($columnNames) !!}});
     });
 </script>

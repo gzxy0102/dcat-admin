@@ -26,10 +26,14 @@
     var $tree = $this.find('.jstree-wrapper .da-tree'),
         $input = $this.find('.hidden-input'),
         opts = {!! admin_javascript_json($options) !!},
-        parents = {!! json_encode($parents) !!};
+        parents = {!! admin_javascript_json($parents) !!};
 
     opts.core = opts.core || {};
-    opts.core.data = {!! json_encode($nodes) !!};
+    if (opts.core.force_text === undefined) {
+        // 节点 text 按纯文本渲染，防止 XSS
+        opts.core.force_text = true;
+    }
+    opts.core.data = {!! admin_javascript_json($nodes) !!};
 
     $this.find('input[value=1]').on("click", function () {
         $(this).parents('.jstree-wrapper').find('.da-tree').jstree($(this).prop("checked") ? "check_all" : "uncheck_all");

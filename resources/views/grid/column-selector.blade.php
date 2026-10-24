@@ -24,7 +24,7 @@
     });
 
     var submit = Dcat.helpers.debounce(function ($this) {
-        var defaults = {!! json_encode($defaults) !!};
+        var defaults = {!! admin_javascript_json($defaults) !!};
         var selected = [];
         var $parent = $this.parents('.column-selector');
         var column = '{{ $columnName }}'
