@@ -112,6 +112,6 @@
     }
 
     $('.grid-dialog-tree').off('click').on('click', function () {
-        resolveDialogTree.call(this, {config: options, nodes: nodes, area: area, rootParentId: '{!! $rootParentId !!}', columns: {!! admin_javascript_json($columnNames) !!}});
+        resolveDialogTree.call(this, {config: options, nodes: nodes, area: area, rootParentId: {!! json_encode((string) $rootParentId, \Dcat\Admin\Support\JavaScript::JSON_ENCODE_FLAGS) !!}, columns: {!! admin_javascript_json($columnNames) !!}});
     });
 </script>

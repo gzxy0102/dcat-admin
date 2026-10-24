@@ -51,6 +51,19 @@ class ExtensionSecurityTest extends TestCase
         $this->assertFalse((new InstallFromLocalForm())->passesAuthorization());
     }
 
+    public function testSensitiveExtensionActionsRejectNonAdministrator()
+    {
+        $user = clone $this->getUser();
+        $user->setRelation('roles', collect());
+        Admin::guard()->login($user);
+
+        $this->assertFalse((new Enable())->passesAuthorization());
+        $this->assertFalse((new Disable())->passesAuthorization());
+        $this->assertFalse((new Update())->passesAuthorization());
+        $this->assertFalse((new Uninstall())->passesAuthorization());
+        $this->assertFalse((new InstallFromLocalForm())->passesAuthorization());
+    }
+
     /**
      * 超级管理员可以执行.
      */

@@ -129,11 +129,12 @@ class JavascriptEncodingTest extends TestCase
             'options'      => ['plugins' => ['checkbox']],
             'area'         => ['580px', '600px'],
             'columnNames'  => ['id' => 'id', 'text' => 'name', 'parent' => 'parent_id'],
-            'rootParentId' => 0,
+            'rootParentId' => "0');alert(1);//",
         ])->render();
 
         $this->assertStringContainsString('force_text = true', $html);
         $this->assertStringNotContainsString('<script>alert', $html);
+        $this->assertStringNotContainsString("0');alert(1);//", $html);
         $this->assertStringContainsString('columns: {"id":"id","text":"name","parent":"parent_id"}', $html);
     }
 
