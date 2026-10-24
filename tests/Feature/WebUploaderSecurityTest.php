@@ -74,7 +74,7 @@ class WebUploaderSecurityTest extends TestCase
      * @param  UploadedFile|null  $file
      * @return Request
      */
-    protected function makeRequest(array $params, UploadedFile $file = null)
+    protected function makeRequest(array $params, ?UploadedFile $file = null)
     {
         $request = Request::create(admin_base_path('auth/login'), 'POST', $params);
 
@@ -107,7 +107,7 @@ class WebUploaderSecurityTest extends TestCase
      * @param  UploadedFile|null  $file
      * @return WebUploader
      */
-    protected function makeUploader(array $params, UploadedFile $file = null): WebUploader
+    protected function makeUploader(array $params, ?UploadedFile $file = null): WebUploader
     {
         if (isset($params['_id']) && is_string($params['_id']) && preg_match('/^[A-Za-z0-9_-]{1,64}$/', $params['_id'])) {
             $this->tmpIds[] = $params['_id'];

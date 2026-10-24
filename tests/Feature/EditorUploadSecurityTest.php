@@ -79,7 +79,7 @@ class EditorUploadSecurityTest extends TestCase
      * @param  UploadedFile|null  $file
      * @return \Illuminate\Http\Request
      */
-    protected function makeRequest(string $input, array $params, UploadedFile $file = null)
+    protected function makeRequest(string $input, array $params, ?UploadedFile $file = null)
     {
         $request = \Illuminate\Http\Request::create('/dcat-api/editor/upload', 'POST', $params);
 

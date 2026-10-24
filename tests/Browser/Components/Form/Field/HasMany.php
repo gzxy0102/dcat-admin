@@ -104,7 +104,7 @@ JS
      * @param  \Closure  $callback
      * @return Browser
      */
-    public function withLastFormGroup(Browser $browser, \Closure $callback = null)
+    public function withLastFormGroup(Browser $browser, ?\Closure $callback = null)
     {
         return $this->withFormGroup($browser, $this->getLastFormGroupIndex($browser), $callback);
     }
