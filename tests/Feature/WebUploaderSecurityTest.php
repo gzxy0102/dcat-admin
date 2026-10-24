@@ -35,7 +35,7 @@ class WebUploaderSecurityTest extends TestCase
      */
     protected $tmpIds = [];
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -43,7 +43,7 @@ class WebUploaderSecurityTest extends TestCase
         mkdir($this->tmpDir, 0755, true);
     }
 
-    protected function tearDown(): void
+    public function tearDown(): void
     {
         foreach ($this->tmpIds as $id) {
             app('files')->deleteDirectory(storage_path('tmp/'.$id));

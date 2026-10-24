@@ -38,7 +38,7 @@ class EditorUploadSecurityTest extends TestCase
      */
     const GIF = 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -51,7 +51,7 @@ class EditorUploadSecurityTest extends TestCase
         ]);
     }
 
-    protected function tearDown(): void
+    public function tearDown(): void
     {
         $this->removeDirectory($this->tmpDir);
 

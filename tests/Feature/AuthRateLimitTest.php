@@ -23,7 +23,7 @@ class AuthRateLimitTest extends TestCase
 {
     protected $login = false;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 

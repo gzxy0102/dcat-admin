@@ -24,7 +24,7 @@ class CreatePageFileDeleteTest extends TestCase
      */
     protected $tmpDir;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -37,7 +37,7 @@ class CreatePageFileDeleteTest extends TestCase
         ]);
     }
 
-    protected function tearDown(): void
+    public function tearDown(): void
     {
         foreach (glob($this->tmpDir.'/*') ?: [] as $file) {
             unlink($file);
