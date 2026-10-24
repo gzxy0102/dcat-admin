@@ -5,6 +5,7 @@ namespace Dcat\Admin\Support;
 use Illuminate\Http\Request;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * WebUploader文件上传处理.
@@ -18,6 +19,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class WebUploader
 {
     const FILE_NAME = '_file_';
+
+    /**
+     * 单次分块上传允许的最大分块数.
+     */
+    const MAX_CHUNKS = 10000;
 
     public $temporaryDirectory = 'tmp';
 
@@ -90,6 +96,10 @@ class WebUploader
         if (! $file || ! $file instanceof UploadedFile) {
             return;
         }
+
+        // 该中间件在登录等鉴权放行路由上、认证之前也会执行，
+        // 必须在任何临时文件写入前完成参数校验，非法请求直接 422
+        $this->validateChunkRequest();
 
         if (! $this->hasChunkFile()) {
             return $file;
@@ -226,13 +236,104 @@ class WebUploader
     }
 
     /**
+     * 校验分块上传参数，保证临时文件只能写入 storage/tmp 内部目录.
+     *
+     * 分块请求必须携带合法的 _id（临时分块目录名）以及范围内的
+     * chunk/chunks 整数，否则以 422 明确拒绝.
+     *
+     * @throws HttpException
+     */
+    protected function validateChunkRequest()
+    {
+        $id = $this->_id;
+
+        // _id 由前端 WebUploader 组件生成（Str::random），作为临时分块
+        // 目录名，必须严格限制字符集，防止路径穿越逃逸 storage/tmp
+        if ($id !== null && $id !== '' && (! is_string($id) || ! preg_match('/^[A-Za-z0-9_-]{1,64}$/', $id))) {
+            throw new HttpException(422, 'Invalid upload id');
+        }
+
+        $chunks = $this->normalizeIntegerParam('chunks');
+        $chunk = $this->normalizeIntegerParam('chunk');
+
+        if ($chunks === null) {
+            // 非分块上传不允许携带 chunk 参数
+            if ($chunk !== null) {
+                throw new HttpException(422, 'Invalid chunk parameter');
+            }
+
+            return;
+        }
+
+        if ($chunks < 1 || $chunks > static::MAX_CHUNKS) {
+            throw new HttpException(422, 'Invalid chunks');
+        }
+
+        $this->chunks = $chunks;
+
+        if ($chunks <= 1) {
+            $this->chunk = $chunk ?: 0;
+
+            return;
+        }
+
+        // 分块上传必须携带合法的 _id 用于隔离临时分块目录
+        if ($id === null || $id === '') {
+            throw new HttpException(422, 'Missing upload id');
+        }
+
+        if ($chunk === null || $chunk < 0 || $chunk >= $chunks) {
+            throw new HttpException(422, 'Invalid chunk index');
+        }
+
+        $this->chunk = $chunk;
+    }
+
+    /**
+     * 解析非负整数请求参数，缺失返回 null，格式非法直接 422.
+     *
+     * @param  string  $property
+     * @return int|null
+     *
+     * @throws HttpException
+     */
+    protected function normalizeIntegerParam(string $property)
+    {
+        $value = $this->{$property};
+
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_int($value)) {
+            if ($value < 0) {
+                throw new HttpException(422, 'Invalid '.$property);
+            }
+
+            return $value;
+        }
+
+        if (! is_string($value) || ! preg_match('/^\d+$/', $value)) {
+            throw new HttpException(422, 'Invalid '.$property);
+        }
+
+        return (int) $value;
+    }
+
+    /**
      * 获取临时文件路径.
      *
      * @param  mixed  $path
      * @return string
+     *
+     * @throws HttpException
      */
     public function getTemporaryPath($path)
     {
+        if (! is_string($path) || ! preg_match('/^[A-Za-z0-9_-]{1,64}$/', $path)) {
+            throw new HttpException(422, 'Invalid temporary path');
+        }
+
         return $this->getTemporaryDirectory().'/'.$path;
     }
 

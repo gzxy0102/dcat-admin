@@ -2,38 +2,24 @@
 
 namespace Dcat\Admin\Http\Controllers;
 
-use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class EditorMDController
 {
+    use ValidatesEditorImageUpload;
+
     public function upload(Request $request)
     {
-        $file = $request->file('editormd-image-file');
-        $dir = trim($request->get('dir'), '/');
-        $disk = $this->disk();
+        list($file, $dir, $disk, $extension) = $this->validateImageUpload($request, 'editormd-image-file');
 
-        $newName = $this->generateNewName($file);
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
+        $storage = Storage::disk($disk);
 
-        $disk->putFileAs($dir, $file, $newName);
+        $newName = $this->generateImageName($file, $extension);
 
-        return ['success' => 1, 'url' => $disk->url("{$dir}/$newName")];
-    }
+        $storage->putFileAs($dir, $file, $newName);
 
-    protected function generateNewName(UploadedFile $file)
-    {
-        return uniqid(md5($file->getClientOriginalName())).'.'.$file->getClientOriginalExtension();
-    }
-
-    /**
-     * @return \Illuminate\Contracts\Filesystem\Filesystem|FilesystemAdapter
-     */
-    protected function disk()
-    {
-        $disk = request()->get('disk') ?: config('admin.upload.disk');
-
-        return Storage::disk($disk);
+        return ['success' => 1, 'url' => $storage->url("{$dir}/$newName")];
     }
 }

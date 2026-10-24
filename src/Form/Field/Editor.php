@@ -3,6 +3,7 @@
 namespace Dcat\Admin\Form\Field;
 
 use Dcat\Admin\Form\Field;
+use Dcat\Admin\Support\EditorUploadSignature;
 use Dcat\Admin\Support\Helper;
 
 /**
@@ -136,6 +137,7 @@ class Editor extends Field
                 '_token' => csrf_token(),
                 'disk'   => $this->disk,
                 'dir'    => $this->imageUploadDirectory,
+                EditorUploadSignature::INPUT_NAME => EditorUploadSignature::make($this->disk, $this->imageUploadDirectory),
             ]
         );
     }
