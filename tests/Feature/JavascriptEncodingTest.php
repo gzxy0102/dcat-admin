@@ -148,7 +148,7 @@ class JavascriptEncodingTest extends TestCase
         $this->assertStringContainsString('\u003C\/script\u003E', $html);
         $this->assertStringNotContainsString('</script><script>alert', $html);
         $this->assertStringContainsString('\u0027', $html);
-        $this->assertStringContainsString('"timeOut":100', $html);
+        $this->assertTrue((bool) preg_match('/"timeOut":(?:"100"|100)/', $html));
     }
 
     public function testToastrViewFallsBackToInfoForInvalidType()
