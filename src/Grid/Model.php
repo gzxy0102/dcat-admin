@@ -589,11 +589,29 @@ class Model
             $this->sort = $this->request->get($this->getSortName());
         }
 
-        if (empty($this->sort['column']) || empty($this->sort['type'])) {
+        // 排序参数来自请求，类型或方向非法时安全忽略，避免注入 SQL
+        if (
+            ! is_array($this->sort)
+            || ! is_string($this->sort['column'] ?? null)
+            || $this->sort['column'] === ''
+            || ! is_string($this->sort['type'] ?? null)
+        ) {
             return [null, null, null];
         }
 
-        return [$this->sort['column'], $this->sort['type'], $this->sort['cast'] ?? null];
+        $type = strtolower($this->sort['type']);
+
+        if (! in_array($type, ['asc', 'desc'], true)) {
+            return [null, null, null];
+        }
+
+        $cast = $this->sort['cast'] ?? null;
+
+        if (! is_string($cast) || $cast === '') {
+            $cast = null;
+        }
+
+        return [$this->sort['column'], $type, $cast];
     }
 
     /**

@@ -210,6 +210,17 @@ class EloquentRepository extends Repository implements TreeRepository
      */
     protected function addOrderBy(Grid\Model $model, $column, $type, $cast)
     {
+        if (is_string($column)) {
+            // 排序参数来自请求，需严格校验，非法参数安全忽略，避免 orderByRaw SQL 注入
+            if (! $this->isValidSortType($type) || ! $this->isValidSortColumn($column)) {
+                return;
+            }
+
+            if (! $this->isValidSortCast($cast)) {
+                $cast = null;
+            }
+        }
+
         $explodedCols = explode('.', $column);
         $isRelation = empty($explodedCols[1]) ? false : method_exists($this->model(), $explodedCols[0]);
 
@@ -281,6 +292,46 @@ class EloquentRepository extends Repository implements TreeRepository
         }
 
         return implode('.', $columns);
+    }
+
+    /**
+     * 校验排序方向.
+     *
+     * @param  mixed  $type
+     * @return bool
+     */
+    protected function isValidSortType($type)
+    {
+        return is_string($type) && in_array(strtolower($type), ['asc', 'desc'], true);
+    }
+
+    /**
+     * 校验排序字段，仅允许普通字段、table.column 以及 JSON 字段（table.column->json.path），
+     * 防止引号、反引号、注释及 SQL 表达式注入.
+     *
+     * @param  mixed  $column
+     * @return bool
+     */
+    protected function isValidSortColumn($column)
+    {
+        return is_string($column)
+            && preg_match('/^[A-Za-z0-9_$]+((\.|->)[A-Za-z0-9_$]+)*$/', $column) === 1;
+    }
+
+    /**
+     * 校验 CAST 类型白名单.
+     *
+     * @param  mixed  $cast
+     * @return bool
+     */
+    protected function isValidSortCast($cast)
+    {
+        if ($cast === null || $cast === '') {
+            return true;
+        }
+
+        return is_string($cast)
+            && preg_match('/^(SIGNED|UNSIGNED)(\s+INTEGER)?$|^(BINARY|CHAR|NCHAR|DATE|DATETIME|TIME|YEAR|DECIMAL|REAL|DOUBLE|FLOAT|JSON)(\s*\(\s*\d+(\s*,\s*\d+)?\s*\))?$/i', trim($cast)) === 1;
     }
 
     /**
