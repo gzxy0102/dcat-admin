@@ -58,6 +58,46 @@ const Dropdown = (($) => {
     }
 
     fixPosition() {
+      // A scrolling table clips absolute menus, even with a higher z-index.
+      // Keep row actions in place for delegated handlers, but position them
+      // against the viewport so they can extend beyond a short table.
+      if (this._element.closest('.grid-dropdown-actions').length) {
+        let menu = this._element.siblings(Selector.DROPDOWN_MENU_ACTIVE)
+
+        if (! menu.length) {
+          return
+        }
+
+        let rect = this._element[0].getBoundingClientRect()
+        let viewportWidth = $(window).width()
+        let viewportHeight = $(window).height()
+
+        menu.css({
+          position: 'fixed',
+          transform: 'none',
+          right: 'auto',
+          bottom: 'auto',
+          maxHeight: Math.max(0, viewportHeight - 10),
+          overflowY: 'auto'
+        })
+
+        let width = menu.outerWidth()
+        let height = menu.outerHeight()
+        let top = rect.bottom
+
+        if (top + height > viewportHeight - 5) {
+          top = rect.top - height
+        }
+
+        menu.css({
+          left: Math.max(5, Math.min(rect.left, viewportWidth - width - 5)),
+          top: Math.max(5, Math.min(top, viewportHeight - height - 5)),
+          marginTop: 0
+        })
+
+        return
+      }
+
       let elm = $(Selector.DROPDOWN_MENU_ACTIVE)
 
       if (elm.length !== 0) {

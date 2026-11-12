@@ -134,6 +134,19 @@ let defaultActions = {
         let selector = '[data-toggle="dropdown"]';
 
         $document.off('click',selector).on('click', selector, toggle).on('click', selector, fix);
+
+        // Fixed row menus must not stay behind when their table moves.
+        function hideRowMenus(event) {
+            $('.grid-dropdown-actions .dropdown-menu.show').each(function () {
+                if (event.type === 'resize' || event.target === document ||
+                    $.contains(event.target, this)) {
+                    $(this).removeClass('show');
+                }
+            });
+        }
+
+        document.addEventListener('scroll', hideRowMenus, true);
+        window.addEventListener('resize', hideRowMenus);
     },
 };
 
